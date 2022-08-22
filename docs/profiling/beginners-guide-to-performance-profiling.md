@@ -17,16 +17,14 @@ ms.technology: vs-ide-debug
 ms.workload:
   - "multiple"
 ---
-# Measure application performance by analyzing CPU usage (C#, Visual Basic, C++, F#)
+# Visual Studio's Diagnostic Tool: Analyzing CPU usage
 
  [!INCLUDE [Visual Studio](~/includes/applies-to-version/vs-windows-only.md)]
 
-Find performance issues while you're debugging with the debugger-integrated **CPU Usage** diagnostic tool.  You can also analyze CPU usage without a debugger attached or by targeting a running app. For more information, see [Run profiling tools with or without the debugger](../profiling/running-profiling-tools-with-or-without-the-debugger.md).
-
-When the debugger pauses, the **CPU Usage** tool in the Diagnostic Tools window collects information about the functions that are executing in your application. The tool lists the functions that were performing work, and provides a timeline graph you can use to focus on specific segments of the sampling session.
+The **CPU Usage diagnostic tool** is used during debugging to analyse the application's use of the CPU ([Information on analyze CPU usage without a debugger attached.](../profiling/running-profiling-tools-with-or-without-the-debugger.md)) While the debugger is paused, the **CPU Usage diagnostic tool** lists the executing functions and provides a timeline graph you can use to focus on specific segments of the sampling session.
 
 > [!Important]
-> The debugger-integrated Diagnostics Tools are supported for .NET development in Visual Studio, including ASP.NET, ASP.NET Core, and for native/C++ development. The corresponding Visual Studio [workload](../install/modify-visual-studio.md) is required. Windows 8 and later is required to run profiling tools with the debugger (**Diagnostic Tools** window).
+> The debugger-integrated Diagnostics Tools are supported for .NET development in Visual Studio. The corresponding Visual Studio [workload](../install/modify-visual-studio.md) and Windows 8 or later is required.
 
 In this tutorial, you will:
 
@@ -34,61 +32,75 @@ In this tutorial, you will:
 > * Collect CPU usage data
 > * Analyze CPU usage data
 
-If **CPU Usage** does not give you the data that you need, other profiling tools in the [Performance Profiler](../profiling/profiling-feature-tour.md#post_mortem) provide different kinds of information that might be helpful to you. In many cases, the performance bottleneck of your application may be caused by something other than your CPU, such as memory, rendering UI, or network request time.
-
 ## Step 1: Collect CPU usage data
 
-1. Open the project you want to debug in Visual Studio and set a breakpoint in your app at the point where you want to examine CPU usage.
+<ol>
+  <li>
+    Set a breakpoint in your app at the point where you want to examine CPU usage.
+  </li>
 
-2. Set a second breakpoint at the end of the function or region of code that you want to analyze.
+  <li>
+    Set a second breakpoint at the end of the region of code that you want to analyze (By setting two breakpoints, you can limit data collection to the parts of code that you want to analyze.)
+  </li>
 
-    By setting two breakpoints, you can limit data collection to the parts of code that you want to analyze.
+  <li>
+    From the Diagnostic Tools menu, 
+    <ul>
+      <li>
+        click on the Cog icon and ensure the **CPU Usage** checkbox is checked.
+        
+  ![Show Diagnostics Tools](../profiling/media/diag-tools-select-tool.png "DiagToolsSelectTool")      
+      </li>
+      <li>
+        click Settings and ensure the **Enable CPU sample rate** checkbox is checked.
+      </li>
+    </ul> 
+  </li>
 
-3. The **Diagnostic Tools** window appears automatically unless you have turned it off. To bring up the window again, click **Debug** > **Windows** > **Show Diagnostic Tools**.
+  <li>
+    Click **Debug** > **Start Debugging** (or **Start** on the toolbar, or **F5**).
+    The **Diagnostic Tools** window appears automatically. (If it doesn't not open, bring up the window again by clicking **Debug** > **Windows** > **Show Diagnostic Tools**.)
 
-4. You can choose whether to see **CPU Usage**, [Memory Usage](../profiling/Memory-Usage.md), or both, with the **Select Tools** setting on the toolbar. If you are running Visual Studio Enterprise,  you can also enable or disable IntelliTrace in **Tools** > **Options** > **IntelliTrace**.
+  ![Diagnostics Tools Summary Tab](../profiling/media/diag-tools-summary-tab.png "DiagToolsSummaryTab")
+  </li>
 
-     ![Show Diagnostics Tools](../profiling/media/diag-tools-select-tool.png "DiagToolsSelectTool")
+  <li>
+    Run the scenario that will cause your first breakpoint to be hit.
+  </li>
 
-     We will mainly be looking at CPU utilization, so make sure that **CPU Usage** is enabled (it is enabled by default).
+  <li>
+    While the debugger is paused, enable the collection of the CPU Usage data and then open the **CPU Usage** tab.
 
-5. Click **Debug** > **Start Debugging** (or **Start** on the toolbar, or **F5**).
+    ![Diagnostics Tools enable CPU profiling](../profiling/media/diag-tools-enable-cpu-profiling.png "DiagToolsEnableCPUProfiling")
 
-     When the app finishes loading, the Summary view of the Diagnostics Tools appears. If you need to open the window, click **Debug** > **Windows** > **Show Diagnostic Tools**.
+    When you choose **Record CPU Profile**, Visual Studio will begin recording your functions and how much time they take to execute. You can only view this collected data when your application is halted at a breakpoint.
+  </li>
 
-     ![Diagnostics Tools Summary Tab](../profiling/media/diag-tools-summary-tab.png "DiagToolsSummaryTab")
+  <li>
+    Hit F5 to run the app to your second breakpoint.
+    
+    Now, you now have performance data for your application specifically for the region of code that runs between the two breakpoints.
+    
+    The profiler begins preparing thread data. Wait for it to finish.
+    
+    ![Diagnostics Tools Preparing Threads](../profiling/media/diag-tools-preparing-data.png "DiagToolsPreparingThreads")
+    
+    The CPU Usage tool displays the report in the **CPU Usage** tab.
+    
+    ![Diagnostics Tools CPU Usage Tab](../profiling/media/diag-tools-cpu-usage-tab.png "DiagToolsCPUUsageTab")
+  </li>
 
-     For more information on the events, see [Searching and filtering the Events tab of the Diagnostic Tools window](https://devblogs.microsoft.com/devops/searching-and-filtering-the-events-tab-of-the-diagnostic-tools-window/).
+   <li>
+     If you want to select a more specific region of code to analyze, select a region in the CPU timeline (it must be a region that shows profiling data).
 
-6. Run the scenario that will cause your first breakpoint to be hit.
+       ![Diagnostics Tools Selecting a Time Segment](../profiling/media/diag-tools-select-time-segment.png "DiagToolsSelectTimeSegment")
 
-7. While the debugger is paused, enable the collection of the CPU Usage data and then open the **CPU Usage** tab.
+       At this point, you can begin to analyze the data.
 
-     ![Diagnostics Tools enable CPU profiling](../profiling/media/diag-tools-enable-cpu-profiling.png "DiagToolsEnableCPUProfiling")
-
-     When you choose **Record CPU Profile**, Visual Studio will begin recording your functions and how much time they take to execute. You can only view this collected data when your application is halted at a breakpoint.
-
-8. Hit F5 to run the app to your second breakpoint.
-
-     Now, you now have performance data for your application specifically for the region of code that runs between the two breakpoints.
-
-     The profiler begins preparing thread data. Wait for it to finish.
-
-     ![Diagnostics Tools Preparing Threads](../profiling/media/diag-tools-preparing-data.png "DiagToolsPreparingThreads")
-
-     The CPU Usage tool displays the report in the **CPU Usage** tab.
-
-     ![Diagnostics Tools CPU Usage Tab](../profiling/media/diag-tools-cpu-usage-tab.png "DiagToolsCPUUsageTab")
-
-9. If you want to select a more specific region of code to analyze, select a region in the CPU timeline (it must be a region that shows profiling data).
-
-     ![Diagnostics Tools Selecting a Time Segment](../profiling/media/diag-tools-select-time-segment.png "DiagToolsSelectTimeSegment")
-
-     At this point, you can begin to analyze the data.
-
-     > [!TIP]
-     >  When trying to identify performance issues, take multiple measurements. Performance naturally varies from run-to-run, and code paths typically execute slower the first time they run due to one-time initialization work such as loading DLLs, JIT compiling methods, and initializing caches. By taking multiple measurements, you get a better idea of the range and median of the metric being shown, whichs allow you to compare the first time versus the steady state performance of an area of code.
-
+       > [!TIP]
+       >  When trying to identify performance issues, take multiple measurements. Performance naturally varies from run-to-run, and code paths typically execute slower the first time they run due to one-time initialization work such as loading DLLs, JIT compiling methods, and initializing caches. By taking multiple measurements, you get a better idea of the range and median of the metric being shown, whichs allow you to compare the first time versus the steady state performance of an area of code.
+  </li>
+</ol>
 ## Step 2: Analyze CPU usage data
 
 We recommend that you begin analyzing your data by examining the list of functions under CPU Usage, identifying the functions that are doing the most work, and then taking a closer look at each one.
